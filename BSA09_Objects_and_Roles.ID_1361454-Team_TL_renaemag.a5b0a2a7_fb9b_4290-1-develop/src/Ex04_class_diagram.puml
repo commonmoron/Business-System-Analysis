@@ -1,0 +1,117 @@
+@startuml BSA9_class_diagram
+skinparam classAttributeIconSize 0
+skinparam classFontStyle Bold
+skinparam classFontSize 12
+skinparam classBackgroundColor #DDEEFF
+skinparam classBorderColor #2F5496
+skinparam ArrowColor #2F5496
+skinparam ArrowFontSize 10
+skinparam linetype ortho
+
+' ────────────────────────────────────────────────
+' Ex00 — Персоны
+' ────────────────────────────────────────────────
+class Персоны {
+  **PK** person_id : INT
+  --
+  login : VARCHAR(50)
+  password_hash : VARCHAR(255)
+  first_name : VARCHAR(100)
+  phone : VARCHAR(15)
+  registration_date : DATE
+  status : VARCHAR(20)
+}
+
+' ────────────────────────────────────────────────
+' Ex01 — Клиенты, Сотрудники
+' ────────────────────────────────────────────────
+class Клиенты {
+  **PK** client_id : INT
+  --
+  **FK** person_id : INT
+  registration_date : DATE
+  preferred_channel : VARCHAR(20)
+  status : VARCHAR(20)
+}
+
+class Сотрудники {
+  **PK** employee_id : INT
+  --
+  **FK** person_id : INT
+  registration_date : DATE
+  status : VARCHAR(20)
+}
+
+' ────────────────────────────────────────────────
+' Ex02 — Справочники
+' ────────────────────────────────────────────────
+class "Роли сотрудника" {
+  **PK** role_id : INT
+  --
+  **FK** employee_id : INT
+  role : VARCHAR(20)
+}
+
+class Услуги {
+  **PK** service_id : INT
+  --
+  service_name : VARCHAR(200)
+  status : VARCHAR(20)
+}
+
+class "Услуги мастера" {
+  **PK** master_service_id : INT
+  --
+  **FK** employee_id : INT
+  **FK** service_id : INT
+}
+
+' ────────────────────────────────────────────────
+' Ex03 — Слоты обслуживания
+' ────────────────────────────────────────────────
+class "Слоты обслуживания" {
+  **PK** slot_id : INT
+  --
+  slot_date : DATE
+  slot_time : TIME
+  **FK** employee_id : INT
+  **FK** client_id : INT
+  **FK** service_id : INT
+  status : VARCHAR(20)
+}
+
+
+
+
+
+' ════════════════════════════════════════════════
+' СВЯЗИ
+' ════════════════════════════════════════════════
+
+' Персоны → Клиенты (1:1)
+Персоны "1" -- "1" Клиенты : является >
+
+' Персоны → Сотрудники (1:1)
+Персоны "1" -- "1" Сотрудники : является >
+
+' Сотрудники → Роли сотрудника (1:*)
+Сотрудники "1" -- "*" "Роли сотрудника" : имеет роль >
+
+' Сотрудники → Услуги мастера (1:*)
+Сотрудники "1" -- "*" "Услуги мастера" : оказывает >
+
+' Услуги → Услуги мастера (1:*)
+Услуги "1" -- "*" "Услуги мастера" : входит в >
+
+' Сотрудники → Слоты обслуживания (1:*) — мастер
+Сотрудники "1" -- "*" "Слоты обслуживания" : ведёт слот >
+
+' Клиенты → Слоты обслуживания (1:*) — бронирование
+Клиенты "1" -- "*" "Слоты обслуживания" : бронирует >
+
+' Услуги → Слоты обслуживания (1:*)
+Услуги "1" -- "*" "Слоты обслуживания" : оказывается в >
+
+
+
+@enduml
